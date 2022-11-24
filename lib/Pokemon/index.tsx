@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 
 import { useEffect, useState } from "react";
-import pokemonApi, { Pokemon } from "../services/pokemon";
+import { pokemonApi, Pokemon } from "../services/pokemon";
 
 function GetPokemon() {
   const [pokemon, setPokemon] = useState<Pokemon>();
