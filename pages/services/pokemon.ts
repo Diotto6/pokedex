@@ -14,7 +14,7 @@ export type Pokemon = {
   };
 };
 
-export const pokemonApi = createApi({
+const pokemonApi = createApi({
   reducerPath: "pokemonApi",
   baseQuery: fetchBaseQuery({ baseUrl: "https://pokeapi.co/api/v2/" }),
   endpoints: (builder) => ({
@@ -24,4 +24,4 @@ export const pokemonApi = createApi({
   }),
 });
 
-export const { useGetPokemonByNameQuery } = pokemonApi;
+export default pokemonApi;

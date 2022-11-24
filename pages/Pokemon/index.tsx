@@ -7,15 +7,18 @@ import {
 } from "@mui/material";
 
 import { useEffect, useState } from "react";
-import { Pokemon, useGetPokemonByNameQuery } from "../services/pokemon";
+import pokemonApi, { Pokemon } from "../services/pokemon";
 
-export function GetPokemon() {
+function GetPokemon() {
   const [pokemon, setPokemon] = useState<Pokemon>();
   const [skip, setSkip] = useState<boolean>(true);
 
   const [search, setSearch] = useState<string>("");
 
-  const { data, error, isLoading } = useGetPokemonByNameQuery(search, { skip });
+  const { data, error, isLoading } = pokemonApi.useGetPokemonByNameQuery(
+    search,
+    { skip }
+  );
 
   function handlePokemon() {
     if (search.length > 3) {
