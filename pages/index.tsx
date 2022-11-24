@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { Fragment } from "react";
-import GetPokemon from "../Pokemon";
+import GetPokemon from "./Pokemon";
 
 export default function Home() {
   return (
