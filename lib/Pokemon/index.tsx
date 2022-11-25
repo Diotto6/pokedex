@@ -7,37 +7,60 @@ import {
 } from "@mui/material";
 
 import { useEffect, useState } from "react";
-import { pokemonApi, Pokemon } from "../services/pokemon";
+import { Pokemon } from "../services/pokemon";
+
+import { useSelector } from "react-redux";
+import { store } from "../store";
+import type { RootState } from "../store";
+import {
+  fetchPokemonByName,
+  selectStatusByName,
+  selectDataByName,
+} from "../services/pokemon";
+
+export function useGetPokemonByNameQuery(name: string) {
+  const dispatch = store.dispatch;
+  // select the current status from the store state for the provided name
+  const status = useSelector((state: RootState) =>
+    selectStatusByName(state, name)
+  );
+  // select the current data from the store state for the provided name
+  const data = useSelector((state: RootState) => selectDataByName(state, name));
+  useEffect(() => {
+    // upon mount or name change, if status is uninitialized, send a request
+    // for the pokemon name
+    if (status === undefined) {
+      dispatch(fetchPokemonByName(name));
+    }
+  }, [status, name, dispatch]);
+
+  // derive status booleans for ease of use
+  const isUninitialized = status === undefined;
+  const isLoading = status === "pending" || status === undefined;
+  const isError = status === "rejected";
+  const isSuccess = status === "fulfilled";
+
+  // return the import data for the caller of the hook to use
+  return { data, isUninitialized, isLoading, isError, isSuccess };
+}
 
 function GetPokemon() {
   const [pokemon, setPokemon] = useState<Pokemon>();
-  const [skip, setSkip] = useState<boolean>(true);
 
   const [search, setSearch] = useState<string>("");
 
-  const { data, error, isLoading } = pokemonApi.useGetPokemonByNameQuery(
-    search,
-    { skip }
-  );
+  const { data, isError, isLoading } = useGetPokemonByNameQuery(search);
 
   function handlePokemon() {
     if (search.length > 3) {
-      setSkip(false);
+      if (data) {
+        setPokemon(data);
+      }
     }
-    setTimeout(() => setSkip(true), 1000);
-  }
-
-  useEffect(() => {
-    console.log(error);
-
-    console.log(data);
-    if (error) {
+    if (isError) {
       setPokemon(undefined);
     }
-    if (data) {
-      setPokemon(data);
-    }
-  }, [data, error]);
+  }
 
   return (
     <>
@@ -63,7 +86,7 @@ function GetPokemon() {
         </Button>
       </Grid>
 
-      {error ? (
+      {isError ? (
         <>
           <Grid
             display="flex"
@@ -94,9 +117,9 @@ function GetPokemon() {
             justifyContent="center"
             width="100vw"
           >
-            <Typography variant="h6">{pokemon.species.name}</Typography>
+            <Typography variant="h6">{pokemon.species?.name}</Typography>
 
-            <img src={pokemon.sprites.other.dream_world.front_default} />
+            <img src={pokemon.sprites?.other.dream_world.front_default} />
           </Grid>
         </>
       ) : (
