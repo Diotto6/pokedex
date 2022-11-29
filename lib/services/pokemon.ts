@@ -10,6 +10,11 @@ export type Pokemon = {
       };
     };
   };
+  types: {
+    type: {
+      name: string;
+    };
+  }[];
 };
 
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";

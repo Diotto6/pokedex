@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   CircularProgress,
   Grid,
@@ -20,27 +21,23 @@ import {
 
 export function useGetPokemonByNameQuery(name: string) {
   const dispatch = store.dispatch;
-  // select the current status from the store state for the provided name
+
   const status = useSelector((state: RootState) =>
     selectStatusByName(state, name)
   );
-  // select the current data from the store state for the provided name
+
   const data = useSelector((state: RootState) => selectDataByName(state, name));
   useEffect(() => {
-    // upon mount or name change, if status is uninitialized, send a request
-    // for the pokemon name
     if (status === undefined) {
       dispatch(fetchPokemonByName(name));
     }
   }, [status, name, dispatch]);
 
-  // derive status booleans for ease of use
   const isUninitialized = status === undefined;
   const isLoading = status === "pending" || status === undefined;
   const isError = status === "rejected";
   const isSuccess = status === "fulfilled";
 
-  // return the import data for the caller of the hook to use
   return { data, isUninitialized, isLoading, isError, isSuccess };
 }
 
@@ -61,6 +58,7 @@ function GetPokemon() {
       setPokemon(undefined);
     }
   }
+  console.log(pokemon);
 
   return (
     <>
@@ -68,22 +66,47 @@ function GetPokemon() {
         display="flex"
         alignItems="center"
         justifyContent="center"
+        flexDirection="column"
         width="100vw"
         height="40vh"
       >
-        <TextField
-          label="Pokemon"
-          placeholder="Digite um pokemon"
-          id="pokemon"
-          name="pokemon"
-          onChange={(e) => {
-            setSearch(e.target.value);
-          }}
-          sx={{ pr: 1 }}
-        />
-        <Button variant="contained" onClick={() => handlePokemon()}>
-          Buscar
-        </Button>
+        <Box display="flex" alignItems="center" justifyContent="center">
+          <TextField
+            label="Pokemon"
+            placeholder="Digite um pokemon"
+            id="pokemon"
+            name="pokemon"
+            onChange={(e) => {
+              setSearch(e.target.value);
+            }}
+            sx={{ pr: 1 }}
+          />
+          <Box>
+            <Button
+              className={
+                pokemon !== undefined ? pokemon?.types[0].type.name : ""
+              }
+              variant="contained"
+              sx={{
+                backgroundColor:
+                  pokemon !== undefined
+                    ? pokemon?.types[0].type.name
+                    : "#141414e8",
+                "&:hover": {
+                  backgroundColor:
+                    pokemon !== undefined
+                      ? pokemon?.types[0].type.name
+                      : "rgba(29, 28, 28, 0.173)",
+                  borderColor: "#f3f3f3",
+                  boxShadow: "none",
+                },
+              }}
+              onClick={() => handlePokemon()}
+            >
+              Buscar
+            </Button>
+          </Box>
+        </Box>
       </Grid>
 
       {isError ? (
@@ -112,6 +135,7 @@ function GetPokemon() {
       ) : pokemon ? (
         <>
           <Grid
+            className={pokemon?.types[0].type.name}
             display="flex"
             alignItems="center"
             justifyContent="center"
